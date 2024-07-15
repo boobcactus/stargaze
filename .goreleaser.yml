@@ -1,23 +1,28 @@
+version: 2
+
 before:
   hooks:
     - go mod download
+    - go mod tidy
 
 builds:
   - main: ./cmd/starsd/
-    id: 'starsd'
+    id: starsd    
     binary: starsd
+    env:
+      - CGO_ENABLED=1
     goos:
-      - linux
+      - windows
     goarch:
       - amd64
     flags:
-      - -tags=netgo,faucet
+      - -tags=netgo,faucet,ledger 
     ldflags:
       - -X "github.com/cosmos/cosmos-sdk/version.Name=Stargaze"
       - -X github.com/cosmos/cosmos-sdk/version.AppName=starsd
       - -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}}
       - -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}}
-      - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,faucet
+      - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,faucet,ledger
 
 release:
   github:
@@ -25,10 +30,3 @@ release:
     name: stargaze
   draft: true
   prerelease: auto
-
-checksum:
-  name_template: 'checksums.txt'
-snapshot:
-  name_template: '{{ .Tag }}-next'
-changelog:
-  skip: true
